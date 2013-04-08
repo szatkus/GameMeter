@@ -1,0 +1,26 @@
+﻿<Window x:Class="GameMeter.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="350" Width="525" ResizeMode="NoResize">
+    <Grid>
+        <StackPanel Height="311" HorizontalAlignment="Left" Name="stackPanel1" VerticalAlignment="Center" Width="503">
+            <WrapPanel Height="52" Name="wrapPanel1" Width="Auto">
+                <Image Height="32" Name="icon" Stretch="Fill" Width="32" Margin="8"/>
+                <Button Content="Choose..." Height="24" Name="chooseButton" Width="84" Margin="8" Click="choose_Click" />
+                <Button Content="Run" Height="24" Name="runButton" Width="84" Margin="8" Click="run_Click" IsEnabled="False" />
+            </WrapPanel>
+            <Canvas Height="200" Name="chart" Width="500" >
+                <Canvas.LayoutTransform>
+                    <ScaleTransform ScaleX="1" ScaleY="-1" />
+                </Canvas.LayoutTransform>
+                <Rectangle
+    Height="200" Width="500"
+    Stroke="Black"  Fill="White" />
+            </Canvas>
+            <WrapPanel Height="60" Name="stats" Width="Auto">
+          
+            </WrapPanel>
+        </StackPanel>
+       
+    </Grid>
+</Window>
