@@ -59,6 +59,12 @@ namespace GameMeter
             startInfo.FileName = FileName;
             startInfo.WorkingDirectory = FileName.Substring(0, FileName.LastIndexOf("\\"));
             Process = Process.Start(startInfo);
+           
+        }
+
+        internal void Run(Process process)
+        {
+            Process = process;
             args.Finish = false;
             Plots = new Dictionary<int, Plot>();
             args.Plots = Plots;
@@ -120,5 +126,7 @@ namespace GameMeter
             Changed(this, args);
         }
 
+
+        
     }
 }

@@ -13,6 +13,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Win32;
 using System.IO;
+using System.Diagnostics;
 
 namespace GameMeter
 {
@@ -38,20 +39,37 @@ namespace GameMeter
                 meter.FileName = dialog.FileName;
                 System.Windows.Controls.Button runButton = (System.Windows.Controls.Button)FindName("runButton");
                 runButton.IsEnabled = true;
-                System.Windows.Controls.Image thumbnail = (System.Windows.Controls.Image) FindName("icon");
+                
+            }
+        }
+
+        private void showIcon(String filename)
+        {
+            try
+            {
+                System.Windows.Controls.Image thumbnail = (System.Windows.Controls.Image)FindName("icon");
                 thumbnail.Source = null;
-                System.Drawing.Icon ico = System.Drawing.Icon.ExtractAssociatedIcon(meter.FileName);
+                System.Drawing.Icon ico = System.Drawing.Icon.ExtractAssociatedIcon(filename);
                 MemoryStream stream = new MemoryStream();
                 ico.Save(stream);
                 thumbnail.Source = System.Windows.Interop.Imaging.CreateBitmapSourceFromHIcon(ico.Handle, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            }
+            catch
+            {
             }
         }
 
         private void run_Click(object sender, RoutedEventArgs e)
         {
             meter.Run();
-            ((System.Windows.Controls.Button)sender).IsEnabled = false;
-            ((System.Windows.Controls.Button)FindName("chooseButton")).IsEnabled = false;
+            toggleControls(false);
+        }
+
+        private void toggleControls(bool isEnabled)
+        {
+            ((System.Windows.Controls.Button)FindName("runButton")).IsEnabled = isEnabled;
+            ((System.Windows.Controls.Button)FindName("chooseButton")).IsEnabled = isEnabled;
+            ((System.Windows.Controls.ComboBox)FindName("comboBox")).IsEnabled = isEnabled;
         }
 
         private void meter_Changed(object sender, MeterEventArgs e)
@@ -103,12 +121,43 @@ namespace GameMeter
                 }
                 else
                 {
-                    ((System.Windows.Controls.Button)FindName("chooseButton")).IsEnabled = true;
-                    ((System.Windows.Controls.Button)FindName("runButton")).IsEnabled = true;
+                    toggleControls(true);
                 }
                 
             });
             
+        }
+
+        private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Process process = ((ProcessDecorator)e.AddedItems[0]).Process;
+            showIcon(process.StartInfo.FileName);
+            meter.Run(process);
+            toggleControls(false);
+        }
+        class ProcessDecorator
+        {
+            public Process Process;
+            public ProcessDecorator(Process process)
+            {
+                Process = process;
+            }
+            public override string ToString()
+            {
+                return Process.ProcessName;
+            }
+        }
+        private void comboBox_DropDownOpened(object sender, EventArgs e)
+        {
+            Process[] processes = Process.GetProcesses();
+            ComboBox comboBox = ((ComboBox)sender);
+            comboBox.Items.Clear();
+            foreach (Process process in processes)
+            {
+
+                comboBox.Items.Add(new ProcessDecorator(process));
+                
+            }
         }
 
     }
